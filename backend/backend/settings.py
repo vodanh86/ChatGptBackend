@@ -129,5 +129,5 @@ CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000'
 ]
 
-ORGANIZATION = "org-1izHYIreYiq6XJOQbzH6rpUl"
-API_KEY = "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"
+ORGANIZATION = ""
+API_KEY = ""
