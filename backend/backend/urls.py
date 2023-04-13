@@ -9,6 +9,7 @@ router.register(r'todos', views.TodoView, 'todo')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/getResult', api.getResult),
+    path('api/getChat', api.getChat),
+    path('api/getImage', api.getImage),
     path('api/', include(router.urls)),
 ]

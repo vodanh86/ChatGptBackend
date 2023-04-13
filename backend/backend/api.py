@@ -1,6 +1,7 @@
 import datetime
 import json
 import openai
+from . import utils
 from django.http import HttpResponse
 from django.conf import settings
 
@@ -12,7 +13,7 @@ openai.api_key = settings.API_KEY
 
 
 @csrf_exempt
-def getResult(request):
+def getChat(request):
     post_data = request.POST
     answer = ""
     choice = 2
@@ -26,7 +27,9 @@ def getResult(request):
             {"role": "assistant", "content": preResponse},
             {"role": "user", "content": question}
         ]
-    print(messages)
+    
+    if utils.checkChatCache(preInput, preResponse, question):
+        return HttpResponse(utils.checkChatCache(preInput, preResponse, question))
 
     if choice == 1:
         return HttpResponse(question)
@@ -36,6 +39,27 @@ def getResult(request):
     )
     if response:
         answer = response["choices"][0]["message"]["content"]
-        
+
+    utils.setChatCache(preInput, preResponse, question, answer)
     print(answer)
     return HttpResponse(answer)
+
+@csrf_exempt
+def getImage(request):
+    post_data = request.POST
+    answer = ""
+    choice = 2
+
+    question = post_data.get("text", "")
+    if utils.checkImageCache(question):
+        return HttpResponse(utils.checkImageCache(question))
+    
+    response = openai.Image.create(
+        prompt=question,
+        n=1,
+        size="256x256"
+    )
+    image_url = response['data'][0]['url']
+    utils.setImageCache(question, image_url)
+    print(image_url)
+    return HttpResponse(image_url)
