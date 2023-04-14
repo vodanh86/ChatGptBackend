@@ -1,6 +1,8 @@
 import datetime
 import json
+import urllib.request
 import openai
+import uuid
 from . import utils
 from django.http import HttpResponse
 from django.conf import settings
@@ -60,6 +62,11 @@ def getImage(request):
         size="256x256"
     )
     image_url = response['data'][0]['url']
-    utils.setImageCache(question, image_url)
-    print(image_url)
-    return HttpResponse(image_url)
+
+    filename = str(uuid.uuid4()) + ".jpg"
+    urllib.request.urlretrieve(image_url, settings.IMAGE_LOCAL + filename)
+    print(filename)
+
+    utils.setImageCache(question, settings.IMAGE_PATH + filename)
+    print(settings.IMAGE_PATH + filename)
+    return HttpResponse(settings.IMAGE_PATH + filename)
